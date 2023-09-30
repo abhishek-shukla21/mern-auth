@@ -2,21 +2,15 @@ const express = require('express');
 const dotenv = require('dotenv').config();
 const {mongoose} = require('mongoose');
 const app = express();
-
-// mongoose.connect(process.env.MONGO_URL, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-// .then(() => console.log('MongoDB connected...'))
-// .catch((err) => console.log(err));
-
+const cookieParser = require('cookie-parser');
 
 mongoose.connect(process.env.MONGO_URL) 
-.then(() => console.log('MongoDB connected...'))
+.then(() => console.log('Database connected'))
 .catch((err) => console.log(err));
 
 app.use(express.json())
-// app.use(cors(corsOptions));
+app.use(cookieParser())
+app.use(express.urlencoded({extended: false}))
 
 app.use('/', require('./routes/authRoutes'))
 
