@@ -14,6 +14,7 @@ export default function Login() {
         e.preventDefault();
         console.log('login user');
         const { email, password } = data;
+        console.log('login user email:', email);
         try {
             const {data} = await axios.post('/login', {email, password})
             if(data.error) {
@@ -24,7 +25,6 @@ export default function Login() {
             }
             
         } catch (error) {
-            
             console.log(error);
         }
     }

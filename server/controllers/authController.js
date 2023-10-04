@@ -28,8 +28,12 @@ const registerUser = async (req, res) => {
 
         } 
         const hashedPassword = await hashPassword(password)
-        const user = await User.create({name, email, password: hashedPassword});
-        res.json(user);
+        const user = await User.create({
+            name, 
+            email, 
+            password: hashedPassword
+        });
+        return res.json(user);
 
     } catch(err){
         console.log(err);
@@ -39,25 +43,32 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const {email, password} = req.body;
+        
         const user = await User.findOne({email});
-        if(!user){
+        if (!user) {
             return res.json({
                 error: 'No User Found'
             });
         }
+
         const match = await comparePassword(password, user.password);
-        if(match){
-            jwt.sign({email: user.email, id: user._id, name:user.name}, process.env.JWT_SECRET, {}, (err, token) => {
-                if(err) throw err;
-                res.cookie('token', token).json(user) })
-        }
-        if(!match){
+        if (match) {
+            jwt.sign(
+                { email: user.email, id: user._id, user: user.name },
+                process.env.JWT_SECRET,
+                (err, token) => {
+                    if (err) throw err;  // Handle the error
+                    res.cookie('token', token).json(user);
+                }
+            );
+        } else {
             res.json({
-                error: 'Pass does not match'
-            })
+                error: 'Password does not match'
+            });
         }
     } catch (error) {
-        console.log(error)        
+        console.log(error);
+        res.json({ error: 'An error occurred during login' });
     }
 }
 
@@ -78,4 +89,5 @@ module.exports = {
     registerUser, 
     loginUser,
     getProfile
+    
 }
